@@ -76,7 +76,7 @@ class Options {
 					__( 'ShoppingFeed', 'shopping-feed' ),
 					'manage_options',
 					self::SF_SLUG,
-					array( $this, 'sf_settings_page' )
+					[ $this, 'sf_settings_page' ]
 				);
 			}
 		);
@@ -142,33 +142,33 @@ class Options {
 
 		$tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'account';
 
-		$tabs = array(
-			array(
+		$tabs = [
+			[
 				'tab' => 'account',
 				'url' => '?page=' . self::SF_SLUG,
 				'title' => __( 'Account', 'shopping-feed' ),
-			),
-			array(
+			],
+			[
 				'tab' => 'feed-settings',
 				'url' => '?page=' . self::SF_SLUG . '&tab=feed-settings',
 				'title' => __( 'Feed', 'shopping-feed' ),
-			),
-			array(
+			],
+			[
 				'tab' => 'shipping-settings',
 				'url' => '?page=' . self::SF_SLUG . '&tab=shipping-settings',
 				'title' => __( 'Shipping', 'shopping-feed' ),
-			),
-			array(
+			],
+			[
 				'tab' => 'orders-settings',
 				'url' => '?page=' . self::SF_SLUG . '&tab=orders-settings',
 				'title' => __( 'Orders', 'shopping-feed' ),
-			),
-			array(
+			],
+			[
 				'tab' => 'logs',
 				'url' => admin_url( 'admin.php?page=wc-status&tab=logs' ),
 				'title' => __( 'Logs', 'shopping-feed' ),
-			),
-		);
+			],
+		];
 		?>
 		<div class="wrap sf__plugin">
 
@@ -324,11 +324,42 @@ class Options {
 			<?php settings_errors(); ?>
 
 <div class="sf__columns">
-		<div class="sf__column">
-			 <form method="post" action="options.php">
+		<div class="sf__column account__wrapper">
+
+		<form method="post" action="options.php">
+		 <?php settings_fields( 'sf_account_page_fields' );
+		 // do_settings_sections( self::SF_ACCOUNT_SETTINGS_PAGE );
+?>
+		<div class="blocks">
+		<div class="block_links">
+					<table class="form-table">
+						<thead>
+							<tr>
+								<th> User </th>
+								<th> Password </th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+								<?php if( isset( $block['links'] ) && !empty( $block['links'] ) ):
+								foreach( $block['links'] as $num => $link ): ?>
+								<tr>
+									<td><input class="regular-text user" type="text" name="sf_account_options[username][1]" value="xxxx"></td>
+									<td><input class="regular-text pass" type="password" name="sf_account_options[password][1]" value="****"></td>
+									<td><button class="button sf__button sf__button--delete">Delete</button></td>
+								</tr>
+							<?php
+								endforeach;
+							endif; ?>
+						</tbody>
+					</table>
+					<p>
+						<button class="button sf__button add_link">Add account</button>
+					</p>
+				</div>
+			</div>
+
 				<?php
-				settings_fields( 'sf_account_page_fields' );
-				do_settings_sections( self::SF_ACCOUNT_SETTINGS_PAGE );
 				if ( ! $this->connected ) {
 					submit_button( __( 'Login', 'shopping-feed' ), 'sf__button' );
 				} else {
@@ -337,6 +368,16 @@ class Options {
 				}
 				?>
 			</form>
+
+			<!-- Line template -->
+			<script type="text/html" id="tpl-line">
+				<tr>
+					<td><input class="regular-text user" type="text" name="sf_account_options[username][<%= row %>]" value="<%= user %>"></td>
+					<td><input class="regular-text pass" type="password" name="sf_account_options[password][<%= row %>]" value="<%= pass %>"></td>
+					<td><button class="button sf__button sf__button--delete delete_link">Delete</button></td>
+				</tr>
+			</script>
+
 		<div class="sf__requirements">
 		<?php
 		$requirements = Requirements::get_instance();
@@ -372,27 +413,35 @@ class Options {
 		wp_enqueue_style(
 			'sf_app',
 			SF_PLUGIN_URL . 'assets/css/app.css',
-			array(),
+			[],
 			true
 		);
 
 		wp_enqueue_script(
 			'multi_js',
 			SF_PLUGIN_URL . 'assets/js/multi.min.js',
-			array( 'jquery' ),
+			[ 'jquery' ],
 			true,
 			true
 		);
 
-		wp_enqueue_script( 'multi_js_init', SF_PLUGIN_URL . 'assets/js/init.js', array( 'multi_js' ), true );
+		wp_enqueue_script(
+			'accounts',
+			SF_PLUGIN_URL . 'assets/js/accounts.js',
+			[ 'jquery', 'underscore' ],
+			true,
+			true
+		);
+
+		wp_enqueue_script( 'multi_js_init', SF_PLUGIN_URL . 'assets/js/init.js', [ 'multi_js' ], true );
 		wp_localize_script(
 			'multi_js_init',
 			'sf_options',
-			array(
+			[
 				'selected_orders'            => __( 'Selected order status', 'shopping-feed' ),
 				'unselected_orders' => __( 'Unselected order status', 'shopping-feed' ),
 				'search' => __( 'Search', 'shopping-feed' ),
-			)
+			]
 		);
 	}
 
@@ -417,11 +466,11 @@ class Options {
 		//get available categories
 		$product_categories = get_terms(
 			ShoppingFeedHelper::wc_category_taxonomy(),
-			array(
+			[
 				'orderby' => 'name',
 				'order' => 'asc',
 				'hide_empty' => false,
-			)
+			]
 		);
 
 		//Identifier Field
@@ -480,7 +529,7 @@ class Options {
 					foreach ( $product_categories as $category ) {
 						?>
 						<option value="<?php echo esc_html( $category->term_id ); ?>"
-							<?php selected( in_array( $category->term_id, ! empty( $this->sf_feed_options['categories'] ) ? $this->sf_feed_options['categories'] : array() ), 1 ); ?>
+							<?php selected( in_array( $category->term_id, ! empty( $this->sf_feed_options['categories'] ) ? $this->sf_feed_options['categories'] : [] ), 1 ); ?>
 						>
 							<?php echo esc_html( $category->name ); ?></option>
 						<?php
@@ -510,7 +559,7 @@ class Options {
 			self::SF_FEED_SETTINGS_PAGE
 		);
 
-		$frequencies_options = array();
+		$frequencies_options = [];
 		for ( $i = 1; $i <= 24; $i++ ) {
 			$frequencies_options[ $i * HOUR_IN_SECONDS ] = sprintf(
 				/* translators: %s: Frequency. */
@@ -558,7 +607,7 @@ class Options {
 				?>
 				<select name="<?php echo esc_html( sprintf( '%s[part_size]', self::SF_FEED_OPTIONS ) ); ?>">
 					<?php
-					foreach ( array( 10, 20, 50, 100, 200, 500, 1000 ) as $part_size_option ) {
+					foreach ( [ 10, 20, 50, 100, 200, 500, 1000 ] as $part_size_option ) {
 						?>
 						<option
 								value="<?php echo esc_html( $part_size_option ); ?>"
@@ -750,7 +799,7 @@ class Options {
 		$zone_with_methods = ShoppingFeedHelper::get_zones_with_shipping_methods();
 
 		if ( ! empty( $sf_carriers ) ) {
-			$matching_shipping_method = ! empty( $this->sf_shipping_options['matching_shipping_method'] ) ? $this->sf_shipping_options['matching_shipping_method'] : array();
+			$matching_shipping_method = ! empty( $this->sf_shipping_options['matching_shipping_method'] ) ? $this->sf_shipping_options['matching_shipping_method'] : [];
 			add_settings_section(
 				'sf_orders_settings_shippings_methods_matching',
 				__( 'Shipping Matching', 'shopping-feed' ),
@@ -842,8 +891,8 @@ class Options {
 		);
 
 		//cron settings
-		$frequencies = array( 5, 10, 15, 30, 45, 60 );
-		$frequencies_options = array();
+		$frequencies = [ 5, 10, 15, 30, 45, 60 ];
+		$frequencies_options = [];
 		foreach ( $frequencies as $frequency ) {
 			$frequencies_options[ $frequency * MINUTE_IN_SECONDS ] = sprintf( '%s %s', $frequency, __( 'min', 'shopping-feed' ) );
 		}
@@ -932,7 +981,7 @@ class Options {
 						foreach ( $wc_order_statuses as $wc_status => $name ) {
 							?>
 							<option value="<?php echo esc_html( $wc_status ); ?>"
-								<?php selected( in_array( $wc_status, ! empty( $this->sf_orders_options['statuses_actions'][ $sf_action ] ) ? $this->sf_orders_options['statuses_actions'][ $sf_action ] : array() ), 1 ); ?>
+								<?php selected( in_array( $wc_status, ! empty( $this->sf_orders_options['statuses_actions'][ $sf_action ] ) ? $this->sf_orders_options['statuses_actions'][ $sf_action ] : [] ), 1 ); ?>
 
 							><?php echo esc_html( $name ); ?></option>
 						<?php } ?>

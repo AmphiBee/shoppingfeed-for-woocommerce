@@ -341,8 +341,14 @@ class Options {
 							</tr>
 						</thead>
 						<tbody>
-								<?php if( isset( $block['links'] ) && !empty( $block['links'] ) ):
-								foreach( $block['links'] as $num => $link ): ?>
+								<tr>
+									<td><input class="regular-text user" type="text" name="sf_account_options[username][1]" value="xxxx"></td>
+									<td><input class="regular-text pass" type="password" name="sf_account_options[password][1]" value="****"></td>
+									<td><button class="button sf__button sf__button--delete">Delete</button></td>
+								</tr>
+								<?php
+								  if( isset( $block['links'] ) && !empty( $block['links'] ) ):
+								  foreach( $block['links'] as $num => $link ): ?>
 								<tr>
 									<td><input class="regular-text user" type="text" name="sf_account_options[username][1]" value="xxxx"></td>
 									<td><input class="regular-text pass" type="password" name="sf_account_options[password][1]" value="****"></td>

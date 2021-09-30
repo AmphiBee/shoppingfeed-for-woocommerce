@@ -29,22 +29,23 @@ else if( typeof shoppingFeed != "object" )
 
         } ).on( 'click', '.delete_link', function( e ) {
             e.preventDefault( );
-            var parent = $( this ).closest( '.block_links' );
+            var parent = $( this ).closest( '.block_links' ),
+                size = parent.find( 'tbody tr' ).size( );
             // Remove the closest item
-            $( this ).closest( 'tr' ).remove( );
 
-            shoppingFeed.accounts.remake_inputs( parent );
+            if (size>1){
+                $( this ).closest( 'tr' ).remove( );
+                shoppingFeed.accounts.remake_inputs( parent );
+            }
         } );
 
     },
     remake_inputs : function( parent ) {
         var content_final = '',
             inputs = parent.find( 'tbody tr' );
-
-        // Recreate all the field with their custom values
+            // Recreate all the field with their custom values
         _.each( inputs, function( el, i ) {
             var el = $( el );
-
             content_final += _.template( shoppingFeed.accounts.tpl_line)({
                 'row' : i,
                 'user' : el.find( '.user' ).val( ),

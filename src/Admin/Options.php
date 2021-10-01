@@ -332,7 +332,7 @@ class Options {
 ?>
 		<div class="blocks">
 		<div class="block_links">
-					<table class="form-table">
+					<table class="form-table sf__table">
 						<thead>
 							<tr>
 								<th> User </th>
@@ -344,7 +344,7 @@ class Options {
 								<tr>
 									<td><input class="regular-text user" type="text" name="sf_account_options[username][1]" value="xxxx"></td>
 									<td><input class="regular-text pass" type="password" name="sf_account_options[password][1]" value="****"></td>
-									<td><button class="button sf__button sf__button--delete">Delete</button></td>
+									<td><button class="button sf__button__secondary delete_link sf__button--delete">Delete</button></td>
 								</tr>
 								<?php
 								  if( isset( $block['links'] ) && !empty( $block['links'] ) ):
@@ -352,35 +352,39 @@ class Options {
 								<tr>
 									<td><input class="regular-text user" type="text" name="sf_account_options[username][1]" value="xxxx"></td>
 									<td><input class="regular-text pass" type="password" name="sf_account_options[password][1]" value="****"></td>
-									<td><button class="button sf__button sf__button--delete">Delete</button></td>
+									<td><button class="button sf__button__secondary delete_link sf__button--delete">Delete</button></td>
 								</tr>
 							<?php
 								endforeach;
 							endif; ?>
 						</tbody>
 					</table>
-					<p>
-						<button class="button sf__button add_link">Add account</button>
-					</p>
-				</div>
-			</div>
 
+			<div class="sf__inline">
+				<p>
+					<button class="button sf__button__secondary add_link">Add account</button>
+				</p>
+			</div>
+			<div class="sf__inline">
 				<?php
-				if ( ! $this->connected ) {
-					submit_button( __( 'Login', 'shopping-feed' ), 'sf__button' );
-				} else {
-					echo '<input class="hidden" name="action" value="sf_logout">';
-					submit_button( __( 'Logout', 'shopping-feed' ), 'sf__button__logout', 'logout' );
-				}
+					if ( ! $this->connected ) {
+						submit_button( __( 'Login', 'shopping-feed' ), 'sf__button' );
+					} else {
+						echo '<input class="hidden" name="action" value="sf_logout">';
+						submit_button( __( 'Logout', 'shopping-feed' ), 'sf__button__logout', 'logout' );
+					}
 				?>
-			</form>
+			</div>
+				</form>
+				</div>
+		</div>
 
 			<!-- Line template -->
 			<script type="text/html" id="tpl-line">
 				<tr>
 					<td><input class="regular-text user" type="text" name="sf_account_options[username][<%= row %>]" value="<%= user %>"></td>
 					<td><input class="regular-text pass" type="password" name="sf_account_options[password][<%= row %>]" value="<%= pass %>"></td>
-					<td><button class="button sf__button sf__button--delete delete_link">Delete</button></td>
+					<td><button class="button sf__button__secondary sf__button--delete delete_link">Delete</button></td>
 				</tr>
 			</script>
 

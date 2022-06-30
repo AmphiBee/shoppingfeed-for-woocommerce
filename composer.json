@@ -18,12 +18,18 @@
       "email": "technical@beapi.fr"
     }
   ],
+  "repositories": [
+    {
+     "type": "vcs",
+      "url": "https://github.com/WordPress/wordpress-develop"
+    }
+  ],
   "require": {
     "php": "^5.6.0|^7",
     "composer/installers": "~1.0",
     "guzzlehttp/guzzle": "^6.3",
     "shoppingfeed/php-sdk": "^0.3",
-    "shoppingfeed/php-feed-generator": "^1.2",
+    "shoppingfeed/php-feed-generator": "^1.2.1",
     "symfony/polyfill-intl-idn": "1.20.0",
     "symfony/polyfill-intl-normalizer": "1.20.0"
   },
@@ -41,7 +47,8 @@
     "wp-coding-standards/wpcs": "^2.2",
     "overtrue/phplint": "^2.0",
     "php-parallel-lint/php-parallel-lint": "^1.2",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0"
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+    "wordpress/wordpress": "*@stable"
   },
   "scripts": {
     "cs": "./vendor/bin/phpcs",

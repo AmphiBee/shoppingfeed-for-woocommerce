@@ -26,7 +26,7 @@ class Address {
 	}
 
 	public function get_formatted_address() {
-		return array(
+		return [
 			'first_name' => $this->get_first_name(),
 			'last_name'  => $this->get_last_name(),
 			'company'    => $this->get_company(),
@@ -38,7 +38,7 @@ class Address {
 			'state'      => $this->get_state(),
 			'postcode'   => $this->get_postcode(),
 			'country'    => $this->get_country(),
-		);
+		];
 	}
 
 	private function get_first_name() {

@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingFeed\ShoppingFeedWC\Addons\Marketplace;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Address;
+use ShoppingFeed\ShoppingFeedWC\Orders\Order\CustomerNote;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Fees;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Metas;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Payment;
@@ -50,8 +51,10 @@ class Order {
 	private $fees;
 
 	/** @var Metas */
-
 	private $metas;
+
+	/** @var CustomerNote */
+	private $note;
 
 	/**
 	 * Order constructor.
@@ -65,6 +68,7 @@ class Order {
 
 		$this->set_shipping_address();
 		$this->set_billing_address();
+		$this->set_note();
 		$this->set_payment();
 		$this->set_shipping();
 		$this->set_products();
@@ -83,6 +87,9 @@ class Order {
 		//Addresses
 		$wc_order->set_address( $this->shipping_address, 'shipping' );
 		$wc_order->set_address( $this->billing_address );
+
+		//Note
+		$wc_order->set_customer_note( $this->note->get_note() );
 
 		//Payment
 		try {
@@ -306,6 +313,10 @@ class Order {
 	 */
 	private function set_metas() {
 		$this->metas = new Metas( $this->sf_order, $this->shipping );
+	}
+
+	private function set_note() {
+		$this->note = new CustomerNote( $this->sf_order );
 	}
 
 	/**

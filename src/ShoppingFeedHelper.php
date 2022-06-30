@@ -146,6 +146,21 @@ XML;
 		return get_option( Options::SF_ACCOUNT_OPTIONS, array() );
 	}
 
+	/**
+	 * Return SF Configuration for Yoast
+	 * @return array
+	 */
+	public static function get_sf_yoast_options() {
+
+		$yoast_options = get_option( Options::SF_YOAST_OPTIONS, [] );
+
+		return wp_parse_args(
+			$yoast_options,
+			[
+				'use_principal_categories' => '1',
+			]
+		);
+	}
 
 	/**
 	 * Set SF Configuration for Account
@@ -234,6 +249,12 @@ XML;
 	 * @return bool|int
 	 */
 	public static function get_sf_default_shipping_zone() {
+		// Ensure retro compatibility
+		$shipping_configuration = self::get_sf_feed_options();
+		if ( is_array( $shipping_configuration ) && isset( $shipping_configuration['zone'] ) && ! empty( $shipping_configuration['zone'] ) ) {
+			return (int) $shipping_configuration['zone'];
+		}
+
 		$shipping_configuration = self::get_sf_shipping_options();
 		if ( ! is_array( $shipping_configuration ) || ! isset( $shipping_configuration['zone'] ) ) {
 			return false;
@@ -272,6 +293,11 @@ XML;
 	 * @return float
 	 */
 	public static function get_sf_default_shipping_fees() {
+		$shipping_configuration = self::get_sf_feed_options();
+		if ( is_array( $shipping_configuration ) && ! empty( $shipping_configuration['fees'] ) && is_numeric( $shipping_configuration['fees'] ) ) {
+			return (float) $shipping_configuration['fees'];
+		}
+
 		$shipping_configuration = self::get_sf_feed_options( 'shipping' );
 		if ( ! is_array( $shipping_configuration ) || empty( $shipping_configuration['fees'] ) || ! is_numeric( $shipping_configuration['fees'] ) ) {
 			return 0;
@@ -698,7 +724,7 @@ XML;
 	 * @return WC_Logger
 	 */
 	public static function get_logger() {
-		return new WC_Logger();
+		return wc_get_logger();
 	}
 
 	/**

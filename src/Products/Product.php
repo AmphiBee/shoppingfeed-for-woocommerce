@@ -30,6 +30,11 @@ class Product {
 	private $brand;
 
 	/**
+	 * @var string
+	 */
+	private $weight;
+
+	/**
 	 * @var bool|mixed|\WP_Term
 	 */
 	private $category;
@@ -45,6 +50,7 @@ class Product {
 		$this->id                 = $this->product->get_id();
 		$this->brand              = $this->set_brand();
 		$this->category           = $this->set_category();
+		$this->weight             = $this->product->get_weight();
 
 		return $this;
 	}
@@ -80,13 +86,28 @@ class Product {
 	 * @return bool|mixed|\WP_Term
 	 */
 	private function set_category() {
-		$terms = get_the_terms( $this->id, ShoppingFeedHelper::wc_category_taxonomy() );
 
-		if ( empty( $terms ) ) {
-			return false;
+		$return           = '';
+		$taxonomy_name    = ShoppingFeedHelper::wc_category_taxonomy();
+		$sf_yoast_options = ShoppingFeedHelper::get_sf_yoast_options();
+
+		if ( class_exists( \WPSEO_Primary_Term::class ) && 1 === (int) $sf_yoast_options['use_principal_categories'] ) {
+			// Show Primary category by Yoast if it is enabled & set
+			$wpseo_primary_term = new \WPSEO_Primary_Term( $taxonomy_name, $this->id );
+			$primary_term       = get_term( $wpseo_primary_term->get_primary_term() );
+			if ( ! is_wp_error( $primary_term ) ) {
+				$return = $primary_term;
+			}
 		}
 
-		return reset( $terms );
+		if ( empty( $return ) ) {
+			$categories_list = get_the_terms( $this->id, $taxonomy_name );
+			if ( ! empty( $categories_list ) && ! is_wp_error( $categories_list ) ) {
+				$return = $categories_list[0];
+			}
+		}
+
+		return empty( $return ) ? false : $return;
 	}
 
 	/**
@@ -184,6 +205,17 @@ class Product {
 		}
 
 		return get_term_link( $this->brand );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_weight() {
+		if ( empty( $this->weight ) ) {
+			return '';
+		}
+
+		return $this->weight;
 	}
 
 	/**
